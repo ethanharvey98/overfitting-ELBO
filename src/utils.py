@@ -1,16 +1,26 @@
 import math
+import numpy as np
 import torch
 
 def inv_softplus(
-    x : torch.Tensor
+    x: torch.Tensor
 ) -> torch.Tensor:
     return x + torch.log(-torch.expm1(-x))
 
+def rbf_kernel(
+    X1: torch.Tensor, 
+    X2: torch.Tensor, 
+    lengthscale : float = 1.0, 
+    outputscale : float = 1.0,
+) -> torch.Tensor:
+    sq_dist = np.sum((X1[None, :, :] - X2[:, None, :]) ** 2, axis=2)
+    return outputscale**2 * np.exp(-0.5 / lengthscale ** 2 * sq_dist)
+
 def lml(
-    Phi : torch.Tensor, 
-    sigma_y2 : torch.Tensor, 
-    y : torch.Tensor,
-    tau : torch.Tensor = torch.tensor(1.0),
+    Phi: torch.Tensor, 
+    sigma_y2: torch.Tensor, 
+    y: torch.Tensor,
+    tau: torch.Tensor = torch.tensor(1.0),
 ) -> torch.Tensor:
     N, R = Phi.shape
     Sigma = sigma_y2 * torch.eye(N, device=Phi.device) + tau * (Phi @ Phi.t())
@@ -23,13 +33,13 @@ def lml(
     return lml
 
 def diag_elbo(
-    mu_q : torch.Tensor, 
-    Phi : torch.Tensor, 
-    sigma_q2 : torch.Tensor, 
-    sigma_y2 : torch.Tensor,
-    y : torch.Tensor, 
-    tau : torch.Tensor = torch.tensor(1.0),
-    temp : torch.Tensor = torch.tensor(1.0),
+    mu_q: torch.Tensor, 
+    Phi: torch.Tensor, 
+    sigma_q2: torch.Tensor, 
+    sigma_y2: torch.Tensor,
+    y: torch.Tensor, 
+    tau: torch.Tensor = torch.tensor(1.0),
+    temp: torch.Tensor = torch.tensor(1.0),
 ) -> torch.Tensor:
     N, R = Phi.shape
     norm_const = N * torch.log(2 * torch.pi * sigma_y2)
@@ -43,14 +53,14 @@ def diag_elbo(
     return (1 / temp) * nll - kl
 
 def rank1_elbo(
-    eps : torch.Tensor, 
-    mu_q : torch.Tensor, 
-    Phi : torch.Tensor, 
-    sigma_y2 : torch.Tensor,
-    v_q : torch.Tensor, 
-    y : torch.Tensor, 
-    tau : torch.Tensor = torch.tensor(1.0),
-    temp : torch.Tensor = torch.tensor(1.0),
+    eps: torch.Tensor, 
+    mu_q: torch.Tensor, 
+    Phi: torch.Tensor, 
+    sigma_y2: torch.Tensor,
+    v_q: torch.Tensor, 
+    y: torch.Tensor, 
+    tau: torch.Tensor = torch.tensor(1.0),
+    temp: torch.Tensor = torch.tensor(1.0),
 ) -> torch.Tensor:
     N, R = Phi.shape
     norm_const = N * torch.log(2 * torch.pi * sigma_y2)
@@ -64,13 +74,13 @@ def rank1_elbo(
     return (1 / temp) * nll - kl
 
 def fullrank_elbo(
-    mu_q : torch.Tensor, 
-    Phi : torch.Tensor, 
-    Sigma_q : torch.Tensor, 
-    sigma_y2 : torch.Tensor,
-    y : torch.Tensor, 
-    tau : torch.Tensor = torch.tensor(1.0),
-    temp : torch.Tensor = torch.tensor(1.0),
+    mu_q: torch.Tensor, 
+    Phi: torch.Tensor, 
+    Sigma_q: torch.Tensor, 
+    sigma_y2: torch.Tensor,
+    y: torch.Tensor, 
+    tau: torch.Tensor = torch.tensor(1.0),
+    temp: torch.Tensor = torch.tensor(1.0),
 ) -> torch.Tensor:
     N, R = Phi.shape
     norm_const = N * torch.log(2 * torch.pi * sigma_y2)
