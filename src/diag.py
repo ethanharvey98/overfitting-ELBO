@@ -9,7 +9,6 @@ import layers
 import updates
 import utils
 
-# python diag.py --num_epochs=1000 --experiment_path="/cluster/home/eharve06/overfitting-ELBO/experiments/sin_dataset/diag_epochs=1000_N=20_num_samples=10_seed=2.pth" --lrs 0.1 --N=20 --num_samples=10 --ranks 25 40 63 100 158 251 398 631 1000 1585 2512 3981 6310 10000 --seed=2
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description="diag.py")
     parser.add_argument("--experiment_path", default="", help="Path to save experiment (default: \"\")", type=str)
