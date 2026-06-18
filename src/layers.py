@@ -32,7 +32,7 @@ class RandomFourierFeatures(torch.nn.Module):
         self, 
         x: torch.Tensor,
     ) -> torch.Tensor:
-        return self.outputscale * (2/self.rank)**0.5 * torch.cos(torch.nn.functional.linear(x, (1/self.lengthscale) * self.feature_weight, self.feature_bias))
+        return self.outputscale * (2 / self.rank) ** 0.5 * torch.cos(torch.nn.functional.linear(x, (1 / self.lengthscale) * self.feature_weight, self.feature_bias))
                                                             
     @property
     def lengthscale(
@@ -45,3 +45,4 @@ class RandomFourierFeatures(torch.nn.Module):
         self,
     ) -> torch.Tensor:
         return torch.nn.functional.softplus(self.raw_outputscale)
+    

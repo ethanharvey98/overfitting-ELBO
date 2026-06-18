@@ -20,3 +20,14 @@ class GaussianLikelihood(torch.nn.Module):
         self,
     ) -> torch.Tensor:
         return torch.nn.functional.softplus(self.raw_variance)
+
+    def forward(
+        self, 
+        logits: torch.Tensor, 
+        labels: torch.Tensor, 
+        reduction: str,
+    ) -> torch.Tensor:
+        var = self.variance * torch.ones(size=(len(logits),), device=logits.device)
+        return torch.nn.functional.gaussian_nll_loss(logits, labels, var, reduction=reduction, full=True)
+
+    

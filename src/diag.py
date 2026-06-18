@@ -83,6 +83,9 @@ if __name__=="__main__":
                     elbos[i,j,k,l] = elbo.item()
                     lmls[i,j,k,l] = lml.item()
                     
+                    if l > 0 and abs(elbos[i,j,k,l] - elbos[i, j, k, l-1]) < 1e-10:
+                        break
+                    
             torch.save({
                 "elbos": elbos,
                 "lmls": lmls,
